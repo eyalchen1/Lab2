@@ -11,7 +11,14 @@ int main(){
         getcwd(cwd, PATH_MAX);
         printf("%s\n", cwd);
         fgets(input, 2048, stdin);
+        if(feof(stdin)){
+            break;
+        }
         cmdLine* cmdline= parseCmdLines(input);
+        int pid=fork();
+        if(!pid){
+            execute(cmdline);
+        }
         printf("%s\n", cmdline->arguments[0]); 
         excecute(cmdline);
         freeCmdLines(cmdline);
