@@ -6,7 +6,7 @@
 
 #ifndef NULL
     #define NULL 0
-#endif // IDOG
+#endif
 
 #define FREE(X) if(X) free((void*)X)
 
