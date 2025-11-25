@@ -4,6 +4,10 @@
 #include <fcntl.h>
 #include <signal.h>
 #include "LineParser.h"
+#include <string.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+
 
 
 int main(){
@@ -22,41 +26,42 @@ int main(){
             chdir(cmdline->arguments[1]);
             continue;
         }
+        if(strcmp(cmdline->arguments[0], "zzzz") == 0){
+                if(cmdline->argCount != 2){
+                perror("zzzz not valid args count");
+                _exit(1);
+                }
+                pid_t targetPid = atoi(cmdline->arguments[1]);
+                kill(targetPid, SIGTSTP);
+                continue;
+    }
+
+            if(strcmp(cmdline->arguments[0], "kuku") == 0){
+                if(cmdline->argCount != 2){
+                    perror("kuku not valid args count");
+                    _exit(1);
+                }
+                pid_t targetPid = atoi(cmdline->arguments[1]);
+                kill(targetPid, SIGCONT);
+                continue;
+            }
+
+            if(strcmp(cmdline->arguments[0], "blast") == 0){
+                if(cmdline->argCount != 2){
+                    perror("blast not valid args count");
+                    _exit(1);
+                }
+                pid_t targetPid = atoi(cmdline->arguments[1]);
+                kill(targetPid, SIGINT);
+                continue;
+            }
         int pid=fork();
         if(cmdline->blocking >= 1){
             waitpid(pid, NULL, 0);
         }
-        
-        if(!pid){
+         if(!pid){
             execute(cmdline);
         }
-        else{
-                if(strcmp(cmdline->arguments[0], "zzzz") == 0){
-        if(cmdline->argCount != 2){
-            perror("zzzz not valid args count");
-            _exit(1);
-        }
-        pid_t targetPid = atoi(cmdline->arguments[1]);
-        kill(targetPid, SIGSTOP);
-    }
-
-    if(strcmp(cmdline->arguments[0], "kuku") == 0){
-        if(cmdline->argCount != 2){
-            perror("kuku not valid args count");
-            _exit(1);
-        }
-        pid_t targetPid = atoi(cmdline->arguments[1]);
-        kill(targetPid, SIGCONT);
-    }
-
-    if(strcmp(cmdline->arguments[0], "blast") == 0){
-        if(cmdline->argCount != 2){
-            perror("blast not valid args count");
-            _exit(1);
-        }
-        pid_t targetPid = atoi(cmdline->arguments[1]);
-        kill(targetPid, SIGINT);
-    }
         freeCmdLines(cmdline);
     }
     return 0;
