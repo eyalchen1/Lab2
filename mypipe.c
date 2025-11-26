@@ -15,11 +15,11 @@ int main(int argc, char *argv[]){
     int pid= fork();
     if(!pid){
         close(fd[0]);
-        write(fd[1], argv[1], strlen(argv[1])+1);
+        write(fd[1], argv[1], +strlen(argv[1])+1);
         close(fd[1]);
     }
     else{
-        wait(NULL);
+        waitpid(pid, NULL, 0);
         close(fd[1]);
         read(fd[0], buffer, sizeof(buffer));
         printf("%s\n", buffer);
