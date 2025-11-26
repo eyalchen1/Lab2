@@ -16,7 +16,7 @@ int main(){
         char input[2048];
         getcwd(cwd, PATH_MAX);
         printf("%s\n", cwd);
-        fgets(input, 2048, stdin); //hey bestie
+        fgets(input, 2048, stdin);
         if(feof(stdin)){
             break;
         }
