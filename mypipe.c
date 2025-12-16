@@ -3,8 +3,6 @@
 #include <string.h>     // for strlen
 #include <sys/wait.h>   // for wait, NULL
 #include <stdlib.h>     // optional: for exit()
-
-
 int main(int argc, char *argv[]){
     int fd[2];
     char buffer[2048];
@@ -25,5 +23,4 @@ int main(int argc, char *argv[]){
         printf("%s\n", buffer);
         close(fd[0]);
     }
-
 }
