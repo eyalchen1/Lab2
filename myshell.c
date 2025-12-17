@@ -10,6 +10,44 @@
 #include <sys/wait.h>
 
 void execute(cmdLine* pCmdLine);
+typedef struct process{
+        cmdLine* cmd;                         /* the parsed command line*/
+        pid_t pid; 		                  /* the process id that is running the command*/
+        int status;                           /* status of the process: RUNNING/SUSPENDED/TERMINATED */
+        struct process *next;	                  /* next process in chain */
+    } process;
+process* processes_list= NULL;
+    #define TERMINATED  -1
+    #define RUNNING 1
+    #define SUSPENDED 0
+
+    void addProcess(process** process_list, cmdLine* cmd, pid_t pid){
+        process *new_process = (process *)malloc(sizeof(process));
+        if (new_process == NULL) {
+            perror("malloc failed");
+            return;
+        }
+        new_process->cmd= cmd;
+        new_process->pid=pid;
+        new_process->status = RUNNING;
+        new_process->next = *process_list;
+        *process_list = new_process;
+    }
+void printProcessList(process **process_list) {
+    process *curr = *process_list;
+    while (curr != NULL) {
+        printf("PID: %d | STATUS: %d | CMD: ", curr->pid, curr->status);
+        if (curr->cmd != NULL) {
+            for (int i = 0; i < curr->cmd->argCount; i++) {
+                printf("%s ", curr->cmd->arguments[i]);
+            }
+        }
+        printf("\n");
+        curr = curr->next;
+    }
+}
+
+
 
 int main() {
     while (1) {
@@ -34,6 +72,10 @@ int main() {
         if (strcmp(cmdline->arguments[0], "cd") == 0) {
             chdir(cmdline->arguments[1]);
             freeCmdLines(cmdline);
+            continue;
+        }
+        if (strcmp(cmdline->arguments[0], "procs") == 0) {
+            printProcessList(&processes_list);
             continue;
         }
 
@@ -65,7 +107,7 @@ void execute(cmdLine* pCmdLine){
     /* ---------- NO PIPE ---------- */
     if (pCmdLine->next == NULL) {
         pid_t pid = fork();
-
+        addProcess(&processes_list, pCmdLine, pid);
         if (pid == 0) {
             if (strcmp(pCmdLine->arguments[0], "quit") == 0)
                 _exit(0);
@@ -105,6 +147,7 @@ void execute(cmdLine* pCmdLine){
     pipe(fd);
 
     pid_t pid1 = fork();
+    addProcess(&processes_list, pCmdLine, pid1);
     if (pid1 == 0) {
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
@@ -116,6 +159,7 @@ void execute(cmdLine* pCmdLine){
     }
 
     pid_t pid2 = fork();
+    addProcess(&processes_list, pCmdLine, pid2);
     if (pid2 == 0) {
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
