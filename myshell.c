@@ -268,6 +268,7 @@ int main() {
             int last_index = (history_start + history_count - 1) % HISTLEN;
             strncpy(cmd_buffer, history[last_index], sizeof(cmd_buffer));
             cmd_buffer[sizeof(cmd_buffer) - 1] = 0;
+            printf("%s\n", cmd_buffer);
         }
         else if (input[0] == '!' && isdigit(input[1])) {
             int n = atoi(input + 1);
@@ -278,6 +279,8 @@ int main() {
             int hist_index = (history_start + n) % HISTLEN;
             strncpy(cmd_buffer, history[hist_index], sizeof(cmd_buffer));
             cmd_buffer[sizeof(cmd_buffer) - 1] = 0;
+            printf("%s\n", cmd_buffer);
+            
         }
         else {
             strncpy(cmd_buffer, input, sizeof(cmd_buffer));
